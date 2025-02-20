@@ -4,42 +4,77 @@ on:
     branches: [ main ]
     tags:
       - "v1.0.1"
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: 代码迁出
+#         uses: actions/checkout@v4
+
+#       - name: 构建Java环境
+#         uses: actions/setup-java@v4
+#         with:
+#           distribution: "zulu"
+#           java-version: "17"
+
+#       - name: 解码生成 jks
+#         run: echo $KEYSTORE_BASE64 | base64 -di > app/keystore.jks
+#         env:
+#           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          
+#       # - name: Release Apk Sign
+#       #   # if: env.commit
+#       #   # working-directory: TVBoxOSC
+#       #   run: |
+#       #     signingConfigs='ICAgIHNpZ25pbmdDb25maWdzIHtcCiAgICAgICAgaWYgKHByb2plY3QuaGFzUHJvcGVydHkoIlJFTEVBU0VfU1RPUkVfRklMRSIpKSB7XAogICAgICAgICAgICBteUNvbmZpZyB7XAogICAgICAgICAgICAgICAgc3RvcmVGaWxlIGZpbGUoUkVMRUFTRV9TVE9SRV9GSUxFKVwKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQgUkVMRUFTRV9TVE9SRV9QQVNTV09SRFwKICAgICAgICAgICAgICAgIGtleUFsaWFzIFJFTEVBU0VfS0VZX0FMSUFTXAogICAgICAgICAgICAgICAga2V5UGFzc3dvcmQgUkVMRUFTRV9LRVlfUEFTU1dPUkRcCiAgICAgICAgICAgICAgICB2MVNpZ25pbmdFbmFibGVkIHRydWVcCiAgICAgICAgICAgICAgICB2MlNpZ25pbmdFbmFibGVkIHRydWVcCiAgICAgICAgICAgICAgICBlbmFibGVWM1NpZ25pbmcgPSB0cnVlXAogICAgICAgICAgICAgICAgZW5hYmxlVjRTaWduaW5nID0gdHJ1ZVwKICAgICAgICAgICAgfVwKICAgICAgICB9XAogICAgfVwKXA=='
+#       #     signingConfig='ICAgICAgICAgICAgaWYgKHByb2plY3QuaGFzUHJvcGVydHkoIlJFTEVBU0VfU1RPUkVfRklMRSIpKSB7XAogICAgICAgICAgICAgICAgc2lnbmluZ0NvbmZpZyBzaWduaW5nQ29uZmlncy5teUNvbmZpZ1wKICAgICAgICAgICAgfVwK'
+#       #     signingConfigs="$(echo "$signingConfigs" |base64 -d > app/keystore.jks)"
+#       #     signingConfig="$(echo "$signingConfig" |base64 -d > app/keystore.jks)"
+          
+#       - name: 生成apk
+#         run: chmod +x ./gradlew && ./gradlew assembleRelease
+
+        # env:
+        #   KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        #   KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        #   KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build On:(${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      TZ: Asia/Shanghai
+    permissions:
+      contents: write
+      security-events: write
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
 
     steps:
-      - name: 代码迁出
+      - name: Checkout sources
         uses: actions/checkout@v4
-
-      - name: 构建Java环境
-        uses: actions/setup-java@v4
         with:
-          distribution: "zulu"
-          java-version: "17"
+          repository: jadehh/mytv-android
+          ref: next
+          path: mytv-android
 
-      - name: 解码生成 jks
-        run: echo $KEYSTORE_BASE64 | base64 -di > app/keystore.jks
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          
-      # - name: Release Apk Sign
-      #   # if: env.commit
-      #   # working-directory: TVBoxOSC
-      #   run: |
-      #     signingConfigs='ICAgIHNpZ25pbmdDb25maWdzIHtcCiAgICAgICAgaWYgKHByb2plY3QuaGFzUHJvcGVydHkoIlJFTEVBU0VfU1RPUkVfRklMRSIpKSB7XAogICAgICAgICAgICBteUNvbmZpZyB7XAogICAgICAgICAgICAgICAgc3RvcmVGaWxlIGZpbGUoUkVMRUFTRV9TVE9SRV9GSUxFKVwKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQgUkVMRUFTRV9TVE9SRV9QQVNTV09SRFwKICAgICAgICAgICAgICAgIGtleUFsaWFzIFJFTEVBU0VfS0VZX0FMSUFTXAogICAgICAgICAgICAgICAga2V5UGFzc3dvcmQgUkVMRUFTRV9LRVlfUEFTU1dPUkRcCiAgICAgICAgICAgICAgICB2MVNpZ25pbmdFbmFibGVkIHRydWVcCiAgICAgICAgICAgICAgICB2MlNpZ25pbmdFbmFibGVkIHRydWVcCiAgICAgICAgICAgICAgICBlbmFibGVWM1NpZ25pbmcgPSB0cnVlXAogICAgICAgICAgICAgICAgZW5hYmxlVjRTaWduaW5nID0gdHJ1ZVwKICAgICAgICAgICAgfVwKICAgICAgICB9XAogICAgfVwKXA=='
-      #     signingConfig='ICAgICAgICAgICAgaWYgKHByb2plY3QuaGFzUHJvcGVydHkoIlJFTEVBU0VfU1RPUkVfRklMRSIpKSB7XAogICAgICAgICAgICAgICAgc2lnbmluZ0NvbmZpZyBzaWduaW5nQ29uZmlncy5teUNvbmZpZ1wKICAgICAgICAgICAgfVwK'
-      #     signingConfigs="$(echo "$signingConfigs" |base64 -d > app/keystore.jks)"
-      #     signingConfig="$(echo "$signingConfig" |base64 -d > app/keystore.jks)"
-          
-      - name: 生成apk
-        run: chmod +x ./gradlew && ./gradlew assembleRelease
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 18
 
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
+      - name: Build with Gradle
+        run: |
+          cd mytv-android
+          bash gradlew assembleDebug
       - name: 获取版本号
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/v}" >>$GITHUB_OUTPUT
