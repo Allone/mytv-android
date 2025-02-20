@@ -74,7 +74,8 @@ jobs:
       - name: Build with Gradle
         run: |
           cd mytv-android
-          bash gradlew assembleDebug
+          # bash gradlew assembleDebug
+          bash gradlew assembleRelease
       # - name: 获取版本号
       #   id: version
       #   run: echo "version=${GITHUB_REF#refs/tags/v}" >>$GITHUB_OUTPUT
