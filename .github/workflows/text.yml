@@ -40,7 +40,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd mytv-android
-          bash gradlew build -i/–info -d/–debug -s/–stacktrace
+          bash gradlew build -i -d -s
       - name: Get Commit Messages
         id: get_git_latest_message
         run: |
